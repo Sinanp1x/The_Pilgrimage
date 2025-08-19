@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>The Pilgrimage - Room 1</title>
+  <title>The Pilgrimage</title>
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
   <style>
     html, body {
       margin: 0;
@@ -60,6 +61,30 @@
     .spacer {
       height: 48px; /* push content below header */
     }
+    .nav-buttons {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1000;
+    }
+    .nav-buttons button {
+      background: #8b5e34;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: background 0.2s;
+    }
+    .nav-buttons button:hover {
+      background: #6b4424;
+    }
   </style>
 </head>
 <body>
@@ -71,17 +96,50 @@
     <div class="page"><div class="zoom-container"><img src="../pdfs/Mzdalif/Mzdalif-2.png" alt="Page 2"></div></div>
   </div>
 
+  <!-- Add after your .pages div -->
+  <div class="nav-buttons">
+    <button id="prev">⬆️</button>
+    <button id="next">⬇️</button>
+  </div>
+
+  <!-- Replace your <script> section with this -->
   <script>
     const pages = document.querySelectorAll('.zoom-container img');
     const scrollContainer = document.querySelector('.pages');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
 
     let scale = 1, startDistance = 0, currentImg = null;
     let lastX = 0, lastY = 0, posX = 0, posY = 0;
+    let isDragging = false;
 
-    // Pinch-to-zoom + pan
+    // Smooth scroll helper
+    function scrollToPage(index) {
+      if (index >= 0 && index < pages.length) {
+        pages[index].closest('.page').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    let currentPage = 0;
+    scrollContainer.addEventListener('scroll', () => {
+      const pageHeight = window.innerHeight;
+      currentPage = Math.round(scrollContainer.scrollTop / pageHeight);
+      // Reset zoom when moving
+      pages.forEach(img => resetZoom(img));
+    });
+
+    prevBtn.addEventListener('click', () => {
+      scrollToPage(currentPage - 1);
+    });
+    nextBtn.addEventListener('click', () => {
+      scrollToPage(currentPage + 1);
+    });
+
+    // --- Zoom + Pan ---
     pages.forEach(img => {
       const container = img.parentElement;
 
+      // ---------------- TOUCH EVENTS ----------------
       img.addEventListener('touchstart', e => {
         if (e.touches.length === 2) {
           startDistance = getDistance(e.touches[0], e.touches[1]);
@@ -114,7 +172,29 @@
         }
       });
 
-      // Double-tap zoom toggle
+      // ---------------- MOUSE EVENTS ----------------
+      img.addEventListener('mousedown', e => {
+        if (scale > 1) {
+          isDragging = true;
+          lastX = e.clientX - posX;
+          lastY = e.clientY - posY;
+          e.preventDefault();
+        }
+      });
+
+      window.addEventListener('mousemove', e => {
+        if (isDragging && scale > 1) {
+          posX = e.clientX - lastX;
+          posY = e.clientY - lastY;
+          img.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // ---------------- DOUBLE TAP / DOUBLE CLICK ----------------
       let lastTap = 0;
       img.addEventListener('click', e => {
         const now = new Date().getTime();
@@ -131,15 +211,11 @@
       });
     });
 
-    // Reset zoom when scrolling to a new page
-    scrollContainer.addEventListener('scroll', () => {
-      pages.forEach(img => resetZoom(img));
-    });
-
     function resetZoom(img) {
       scale = 1;
       posX = posY = 0;
       img.style.transform = `translate(0,0) scale(1)`;
+      isDragging = false;
     }
 
     function getDistance(touch1, touch2) {
