@@ -38,7 +38,7 @@
       justify-content: center;
       align-items: center;
       overflow: hidden; /* contain zoomed image */
-      touch-action: none;
+      touch-action: pan-y; /* ✅ allow vertical scroll, block horizontal */
     }
     .zoom-container img {
       max-width: 100%;
@@ -86,6 +86,7 @@
       background: #6b4424;
     }
   </style>
+  <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
   <a href="../index.html" class="back-link">← Back to All Rooms</a>
@@ -98,27 +99,15 @@
     <div class="page"><div class="zoom-container"><img src="../pdfs/Kaaba/Kaaba-4.png" alt="Page 4"></div></div>
   </div>
 
-  <div class="nav-buttons">
-    <button id="prev">⬆️</button>
-    <button id="next">⬇️</button>
-  </div>
 
   <script>
     const pages = document.querySelectorAll('.zoom-container img');
     const scrollContainer = document.querySelector('.pages');
-    const prevBtn = document.getElementById('prev');
-    const nextBtn = document.getElementById('next');
 
     let scale = 1, startDistance = 0, currentImg = null;
     let lastX = 0, lastY = 0, posX = 0, posY = 0;
     let isDragging = false;
 
-    // Smooth scroll helper
-    function scrollToPage(index) {
-      if (index >= 0 && index < pages.length) {
-        pages[index].closest('.page').scrollIntoView({ behavior: 'smooth' });
-      }
-    }
 
     let currentPage = 0;
     scrollContainer.addEventListener('scroll', () => {
@@ -126,13 +115,6 @@
       currentPage = Math.round(scrollContainer.scrollTop / pageHeight);
       // Reset zoom when moving
       pages.forEach(img => resetZoom(img));
-    });
-
-    prevBtn.addEventListener('click', () => {
-      scrollToPage(currentPage - 1);
-    });
-    nextBtn.addEventListener('click', () => {
-      scrollToPage(currentPage + 1);
     });
 
     // --- Zoom + Pan ---

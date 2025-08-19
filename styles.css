@@ -1,5 +1,5 @@
 body {
-    font-family: 'Noto Serif', serif, Arial, sans-serif;
+    font-family: 'AnekMalayalam', sans-serif;
     background-color: #f5f0e1;
     color: #3c2f2f;
 }
@@ -53,28 +53,43 @@ body {
     to { opacity: 0; visibility: hidden; }
 }
 
+/* --- Add all weights --- */
 @font-face {
   font-family: 'AnekMalayalam';
-  src: url('assets/fonts/AnekMalayalam-Light.ttf') format('truetype');
+  src: url('assets/Fonts/AnekMalayalam-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+}
+@font-face {
+  font-family: 'AnekMalayalam';
+  src: url('assets/Fonts/AnekMalayalam-Light.ttf') format('truetype');
+  font-weight: 300;
+}
+@font-face {
+  font-family: 'AnekMalayalam';
+  src: url('assets/Fonts/AnekMalayalam-Regular.ttf') format('truetype');
   font-weight: 400;
 }
-
 @font-face {
   font-family: 'AnekMalayalam';
-  src: url('assets/fonts/AnekMalayalam-Regular.ttf') format('truetype');
-  font-weight: 600;
+  src: url('assets/Fonts/AnekMalayalam-Medium.ttf') format('truetype');
+  font-weight: 500;
 }
 
+/* --- Utility class for headings --- */
+.font-anek {
+  font-family: 'AnekMalayalam';
+}
+
+/* --- Use correct weights --- */
 #title {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 500; /* Medium */
     color: #8b5e34;
-    font-family: 'AnekMalayalam', sans-serif;
+    font-family: 'AnekMalayalam';
 }
-
 #subtitle {
     font-size: 1rem;
-    font-weight: 400;
+    font-weight: 300; /* Light */
     color: #6b4f4f;
-    font-family: 'anekMalayalam', sans-serif;
+    font-family: 'AnekMalayalam';
 }
