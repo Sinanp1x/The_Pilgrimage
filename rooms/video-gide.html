@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>THE PILGRIMAGE</title>
-  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <title>Video Guide</title>
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
   <style>
     :root {
       --bg: #0f0f0f;
@@ -29,11 +29,10 @@
       overflow:hidden;
       box-shadow:0 8px 30px #0008;
     }
-    video {
-      width:100%;
-      height:100%;
-      display:block;
-      background:#000;
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
     /* tap-to-seek zones */
     .tap-zone {
@@ -92,172 +91,14 @@
 <body>
   <div class="wrap">
     <div class="player" role="region" aria-label="Custom video player">
-      <!-- Replace with your file and (optional) poster -->
-      <video id="video" preload="metadata" playsinline webkit-playsinline>
-        <source src="../pdfs/guide.mp4" type="video/mp4" />
-        <!-- Optional captions (recommended for accessibility) -->
-        <!-- <track kind="captions" src="assets/captions/guide.en.vtt" srclang="en" label="English" default> -->
-        Sorry, your browser doesn’t support embedded videos.
-      </video>
-
-      <!-- double-tap zones -->
-      <div class="tap-zone tap-left"  aria-label="Double tap to rewind 10 seconds"></div>
-      <div class="tap-zone tap-right" aria-label="Double tap to skip forward 10 seconds"></div>
-      <div class="flash" aria-hidden="true"></div>
-
-      <!-- controls -->
-      <div class="controls">
-        <button class="btn" id="play" aria-label="Play (K)">
-          ▶️
-        </button>
-
-        <div class="time" aria-live="polite" id="time">00:00 / 00:00</div>
-
-        <div class="progress" id="progress" aria-label="Seek bar" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
-          <div class="bar" id="bar"></div>
-        </div>
-
-        <button class="btn" id="mute" aria-label="Mute (M)">
-          🔊
-        </button>
-
-        <select id="speed" class="speed" aria-label="Playback speed">
-          <option value="0.5">0.5×</option>
-          <option value="0.75">0.75×</option>
-          <option value="1" selected>1.0×</option>
-          <option value="1.25">1.25×</option>
-          <option value="1.5">1.5×</option>
-          <option value="1.75">1.75×</option>
-          <option value="2">2.0×</option>
-        </select>
-      </div>
+      <!-- Replace YOUR_VIDEO_ID with actual YouTube video ID -->
+      <iframe 
+        src="https://www.youtube.com/embed/Cl62ATYX6tw?playsinline=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&fs=1"
+        title="Guide Video"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
     </div>
   </div>
-
-  <script>
-    const video   = document.getElementById('video');
-    const playBtn = document.getElementById('play');
-    const speed   = document.getElementById('speed');
-    const timeEl  = document.getElementById('time');
-    const progress= document.getElementById('progress');
-    const bar     = document.getElementById('bar');
-    const zoneL   = document.querySelector('.tap-left');
-    const zoneR   = document.querySelector('.tap-right');
-    const flash   = document.querySelector('.flash');
-    const muteBtn = document.getElementById('mute');
-
-    // iOS inline playback friendly defaults
-    video.controls = false; // we use custom controls
-    video.playsInline = true;
-    video.setAttribute('playsinline','');
-
-    // helpers
-    const fmt = s => {
-      s = Math.max(0, Math.floor(s));
-      const m = Math.floor(s/60).toString().padStart(2,'0');
-      const ss = (s%60).toString().padStart(2,'0');
-      return `${m}:${ss}`;
-    };
-    const updateTime = () => {
-      timeEl.textContent = `${fmt(video.currentTime)} / ${fmt(isFinite(video.duration)?video.duration:0)}`;
-      const pct = video.duration ? (video.currentTime / video.duration) * 100 : 0;
-      bar.style.width = `${pct}%`;
-      progress.setAttribute('aria-valuenow', Math.round(pct));
-    };
-
-    function togglePlay() {
-      if (video.paused) { video.play(); }
-      else { video.pause(); }
-      playBtn.textContent = video.paused ? '▶️' : '⏸️';
-    }
-
-    function toggleMute() {
-      video.muted = !video.muted;
-      muteBtn.textContent = video.muted ? '🔇' : '🔊';
-      muteBtn.setAttribute('aria-label', video.muted ? 'Unmute (M)' : 'Mute (M)');
-    }
-
-    playBtn.addEventListener('click', togglePlay);
-    video.addEventListener('click', togglePlay); // click on video toggles
-
-    muteBtn.addEventListener('click', toggleMute);
-
-    // Also update button if user mutes with keyboard shortcut (M)
-    video.addEventListener('volumechange', () => {
-      muteBtn.textContent = video.muted ? '🔇' : '🔊';
-      muteBtn.setAttribute('aria-label', video.muted ? 'Unmute (M)' : 'Mute (M)');
-    });
-
-    speed.addEventListener('change', () => {
-      video.playbackRate = parseFloat(speed.value);
-      speed.blur();
-    });
-
-    video.addEventListener('timeupdate', updateTime);
-    video.addEventListener('loadedmetadata', updateTime);
-    video.addEventListener('play', () => playBtn.textContent = '⏸️');
-    video.addEventListener('pause', () => playBtn.textContent = '▶️');
-
-    // progress click/drag seek
-    const seek = (clientX) => {
-      const rect = progress.getBoundingClientRect();
-      const pct = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-      if (video.duration) video.currentTime = pct * video.duration;
-    };
-    progress.addEventListener('click', e => seek(e.clientX));
-
-    // keyboard accessibility
-    document.addEventListener('keydown', (e) => {
-      if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
-      switch (e.key.toLowerCase()) {
-        case ' ': case 'k': e.preventDefault(); togglePlay(); break;
-        case 'j': video.currentTime = Math.max(0, video.currentTime - 10); break;
-        case 'l': video.currentTime = Math.min(video.duration||0, video.currentTime + 10); break;
-        case 'arrowup': video.volume = Math.min(1, video.volume + 0.05); break;
-        case 'arrowdown': video.volume = Math.max(0, video.volume - 0.05); break;
-        case 'm': video.muted = !video.muted; break;
-        case '+': case '=': video.playbackRate = Math.min(2, (video.playbackRate + 0.25)); speed.value = video.playbackRate; break;
-        case '-': case '_': video.playbackRate = Math.max(0.5, (video.playbackRate - 0.25)); speed.value = video.playbackRate; break;
-      }
-    });
-
-    // double-tap on mobile to seek ±10s
-    function makeDoubleTapHandler(skipSeconds, zoneElement) {
-      let last = 0;
-      zoneElement.addEventListener('touchstart', (e) => {
-        const now = performance.now();
-        if (now - last < 300) {
-          // position for ripple feedback
-          const t = e.touches[0];
-          const rect = zoneElement.getBoundingClientRect();
-          flash.style.setProperty('--x', `${((t.clientX-rect.left)/rect.width)*100}%`);
-          flash.style.setProperty('--y', `${((t.clientY-rect.top)/rect.height)*100}%`);
-          flash.classList.add('show');
-          setTimeout(()=>flash.classList.remove('show'), 180);
-
-          // do the skip
-          const target = Math.max(0, Math.min((video.duration||0), video.currentTime + skipSeconds));
-          video.currentTime = target;
-          updateTime();
-        }
-        last = now;
-      }, { passive: true });
-    }
-    makeDoubleTapHandler(-10, zoneL);
-    makeDoubleTapHandler(+10, zoneR);
-
-    // also support double-click on desktop
-    zoneL.addEventListener('dblclick', () => { video.currentTime = Math.max(0, video.currentTime - 10); });
-    zoneR.addEventListener('dblclick', () => { video.currentTime = Math.min(video.duration||0, video.currentTime + 10); });
-
-    // Allow dragging the slider with keyboard (left/right)
-    progress.addEventListener('keydown', (e) => {
-      if (!video.duration) return;
-      const step = (e.shiftKey ? 0.05 : 0.01) * video.duration;
-      if (e.key === 'ArrowLeft') { video.currentTime = Math.max(0, video.currentTime - step); e.preventDefault(); }
-      if (e.key === 'ArrowRight'){ video.currentTime = Math.min(video.duration, video.currentTime + step); e.preventDefault(); }
-    });
-  </script>
 </body>
 </html>
-``` 
