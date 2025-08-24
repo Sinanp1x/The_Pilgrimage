@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Video Guide</title>
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --fg: #ffffff;
+      --accent: #8b5e34;
+      --muted: #ffffffcc;
+    }
+    * { box-sizing: border-box }
+    html, body { margin:0; height:100%; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .wrap {
+      min-height:100%;
+      display:grid;
+      place-items:center;
+      padding:12px;
+    }
+    .player {
+      position:relative;
+      width:min(100vw, 900px);
+      aspect-ratio: 16 / 9;
+      background:#000;
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 8px 30px #0008;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    /* tap-to-seek zones */
+    .tap-zone {
+      position:absolute; top:0; bottom:64px; width:50%; /* leave room for controls */
+    }
+    .tap-left  { left:0; }
+    .tap-right { right:0; }
+    /* faint ripple feedback */
+    .flash {
+      position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .25s;
+      background: radial-gradient(ellipse at var(--x,50%) var(--y,50%), #fff4, transparent 40%);
+    }
+    .flash.show { opacity:1 }
+
+    /* controls bar */
+    .controls {
+      position:absolute; left:0; right:0; bottom:0;
+      background:linear-gradient(180deg, transparent, #0009);
+      padding:10px 12px 14px;
+      display:flex; align-items:center; gap:10px;
+      backdrop-filter:saturate(140%) blur(2px);
+    }
+    .btn {
+      appearance:none; border:0; border-radius:999px;
+      background:#ffffff1a; color:var(--fg);
+      width:44px; height:44px; display:grid; place-items:center; cursor:pointer;
+      transition:background .2s, transform .05s;
+    }
+    .btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px }
+    .btn:hover { background:#ffffff28 }
+    .btn:active { transform:scale(.97) }
+
+    .speed {
+      margin-left:auto;
+      background:#ffffff1a; color:var(--fg);
+      border:0; border-radius:10px; padding:10px 12px;
+    }
+    .time {
+      font-variant-numeric: tabular-nums;
+      color:var(--muted);
+      min-width:110px; text-align:center;
+    }
+    .progress {
+      flex:1; height:6px; border-radius:999px; background:#ffffff26; position:relative; cursor:pointer;
+    }
+    .progress .bar {
+      position:absolute; left:0; top:0; bottom:0;
+      background:var(--accent); border-radius:999px; width:0%;
+    }
+    .sr-only {
+      position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="player" role="region" aria-label="Custom video player">
+      <!-- Replace YOUR_VIDEO_ID with actual YouTube video ID -->
+      <iframe 
+        src="https://www.youtube.com/embed/DAx6fe6j--M?playsinline=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&fs=1"
+        title="Guide Video"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+</body>
+</html>
